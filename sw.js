@@ -1,5 +1,5 @@
 // アプリの殻だけキャッシュし、データは常にネットワークから取る
-const CACHE = 'chigyu-v4';
+const CACHE = 'chigyu-v5';
 const SHELL = ['./', './index.html', './style.css', './app.js', './config.js', './manifest.webmanifest', './assets/bowl.png'];
 
 self.addEventListener('install', (e) => {

@@ -5,7 +5,7 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const LINE_TOKEN = Deno.env.get("LINE_CHANNEL_ACCESS_TOKEN") ?? "";
 const LINE_SECRET = Deno.env.get("LINE_CHANNEL_SECRET") ?? "";
-const APP_URL = "https://ace0110-m.github.io/chigyu-counter/";
+const APP_URL = "https://ace0110-m.github.io/chigyu/";
 const sb = createClient(
   Deno.env.get("SUPABASE_URL")!,
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
