@@ -186,11 +186,17 @@
   }
 
   async function uploadEvidence(file) {
-    const blob = await shrinkImage(file);
-    const path = `${new Date().toISOString().slice(0, 10)}/${crypto.randomUUID()}.jpg`;
-    const { error } = await sb.storage.from(CFG.bucket).upload(path, blob, { contentType: 'image/jpeg', upsert: false });
-    if (error) throw error;
-    return sb.storage.from(CFG.bucket).getPublicUrl(path).data.publicUrl;
+    // 本体（最大1280px）と、LINE通知のプレビュー用サムネ（最大480px）を両方アップロードする
+    const [blob, thumb] = await Promise.all([shrinkImage(file, 1280), shrinkImage(file, 480)]);
+    const base = `${new Date().toISOString().slice(0, 10)}/${crypto.randomUUID()}`;
+    const bucket = sb.storage.from(CFG.bucket);
+    const [a, b] = await Promise.all([
+      bucket.upload(`${base}.jpg`, blob, { contentType: 'image/jpeg', upsert: false }),
+      bucket.upload(`${base}_thumb.jpg`, thumb, { contentType: 'image/jpeg', upsert: false }),
+    ]);
+    if (a.error) throw a.error;
+    if (b.error) console.warn('thumb upload failed', b.error);
+    return bucket.getPublicUrl(`${base}.jpg`).data.publicUrl;
   }
 
   // ---------- シート ----------

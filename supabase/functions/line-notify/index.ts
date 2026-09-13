@@ -75,6 +75,29 @@ async function handleWebhook(req: Request) {
   return json({ ok: true });
 }
 
+// LINEの画像メッセージ: 本体10MB以下・プレビュー1MB以下・https必須
+async function contentLength(url: string): Promise<number | null> {
+  try {
+    const res = await fetch(url, { method: "HEAD" });
+    if (!res.ok) return null;
+    const len = Number(res.headers.get("content-length"));
+    return Number.isFinite(len) ? len : null;
+  } catch { return null; }
+}
+async function buildImageMessage(url: string | null) {
+  if (!url?.startsWith("https://")) return null;
+  const origSize = await contentLength(url);
+  if (origSize === null || origSize > 10 * 1024 * 1024) return null;
+  // アプリが同時にアップロードするサムネ（_thumb.jpg）があればプレビューに使う
+  const thumbUrl = url.replace(/\.jpg$/, "_thumb.jpg");
+  const thumbSize = thumbUrl !== url ? await contentLength(thumbUrl) : null;
+  const preview = thumbSize !== null && thumbSize <= 1024 * 1024 ? thumbUrl
+    : origSize <= 1024 * 1024 ? url
+    : null;
+  if (!preview) return null;
+  return { type: "image", originalContentUrl: url, previewImageUrl: preview };
+}
+
 // ---------- 通知 ----------
 async function handleNotify(req: Request) {
   const { log_id } = await req.json().catch(() => ({}));
@@ -105,9 +128,8 @@ async function handleNotify(req: Request) {
     : `🍚 ${member.name} が ${n}杯 食べた！\n残り ${member.remaining}杯（今月 ${eaten}杯クリア）`;
 
   const messages: unknown[] = [{ type: "text", text }];
-  if (log.evidence_url?.startsWith("https://")) {
-    messages.push({ type: "image", originalContentUrl: log.evidence_url, previewImageUrl: log.evidence_url });
-  }
+  const image = await buildImageMessage(log.evidence_url);
+  if (image) messages.push(image);
 
   await linePush(groupId, messages);
   await sb.from("chigyu_logs").update({ notified_at: new Date().toISOString() }).eq("id", log.id);
