@@ -196,8 +196,12 @@ h1, h2, h3 { margin: 0; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip { border: 1.5px solid var(--line); background: #fff; border-radius: 99px; padding: 8px 14px; font-weight: 700; font-size: 14px; }
 
-.member-big { text-align: center; font-size: 64px; font-weight: 900; color: var(--orange); line-height: 1; margin: 8px 0 4px; }
-.member-big small { font-size: 26px; margin-left: 4px; }
+.member-summary { text-align: center; margin: 4px 0 16px; }
+.member-big { font-size: 56px; font-weight: 900; color: var(--orange); line-height: 1; }
+.member-big small { font-size: 24px; margin-left: 4px; }
+.member-sub { font-size: 13px; color: var(--muted); font-weight: 600; margin-top: 6px; }
+.list-flat { box-shadow: none; border: 1px solid var(--line); }
+.list-flat .log { padding: 10px 12px; }
 
 /* 画像ビューア */
 .viewer { position: fixed; inset: 0; z-index: 30; background: rgba(0,0,0,.92); display: grid; place-items: center; padding: 20px; }

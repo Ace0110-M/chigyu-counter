@@ -157,20 +157,19 @@
     </div>
   </div>
 
-  <!-- メンバー調整シート -->
+  <!-- メンバー履歴シート -->
   <div id="sheet-member" class="sheet" hidden>
     <div class="sheet-panel">
       <div class="sheet-handle"></div>
       <div class="sheet-head">
-        <h3 id="member-title">調整</h3>
+        <h3 id="member-title">履歴</h3>
         <button class="close" type="button" data-close>×</button>
       </div>
-      <div class="member-big"><span id="member-remaining">0</span><small>杯</small></div>
-      <div class="row-buttons">
-        <button id="member-minus" class="btn btn-outline" type="button">− 1杯</button>
-        <button id="member-plus" class="btn btn-primary" type="button">＋ 1杯</button>
+      <div class="member-summary">
+        <div class="member-big"><span id="member-remaining">0</span><small>杯</small></div>
+        <div class="member-sub">残り ／ 今月 <span id="member-month">0</span>杯クリア</div>
       </div>
-      <button id="member-set-me" class="btn btn-wide btn-ghost" type="button">この人を「自分」にする</button>
+      <div id="member-history" class="card list list-flat"></div>
     </div>
   </div>
 

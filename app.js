@@ -91,8 +91,26 @@
         </button>`).join('');
 
     // 履歴
+    $('history').innerHTML = renderLogs(state.logs);
+    if (state.memberSheetId && !$('sheet-member').hidden) renderMemberSheet();
+
+    // セレクト類
+    const opts = state.members.map((x) => `<option value="${x.id}">${esc(x.name)}</option>`).join('');
+    $('evidence-member').innerHTML = opts;
+    $('setting-me').innerHTML = opts;
+    if (state.meId) { $('evidence-member').value = state.meId; $('setting-me').value = state.meId; }
+    $('setting-name').placeholder = m ? m.name : '新しいニックネーム';
+    $('setting-rename').disabled = !m;
+    $('setting-delete').disabled = !m;
+
+    // 登録シートの既存メンバー
+    $('register-existing').hidden = state.members.length === 0;
+    $('register-existing-list').innerHTML = state.members.map((x) => `<button type="button" class="chip" data-id="${x.id}">${esc(x.name)}</button>`).join('');
+  }
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  function renderLogs(logs) {
     const byId = Object.fromEntries(state.members.map((x) => [x.id, x]));
-    $('history').innerHTML = state.logs.map((l) => {
+    const html = logs.map((l) => {
       const who = byId[l.member_id];
       if (!who) return '';
       const n = Math.abs(l.delta);
@@ -111,22 +129,9 @@
           </div>
           ${img}
         </div>`;
-    }).join('') || '<div class="log" style="justify-content:center;color:var(--muted)">まだ履歴がありません</div>';
-
-    // セレクト類
-    const opts = state.members.map((x) => `<option value="${x.id}">${esc(x.name)}</option>`).join('');
-    $('evidence-member').innerHTML = opts;
-    $('setting-me').innerHTML = opts;
-    if (state.meId) { $('evidence-member').value = state.meId; $('setting-me').value = state.meId; }
-    $('setting-name').placeholder = m ? m.name : '新しいニックネーム';
-    $('setting-rename').disabled = !m;
-    $('setting-delete').disabled = !m;
-
-    // 登録シートの既存メンバー
-    $('register-existing').hidden = state.members.length === 0;
-    $('register-existing-list').innerHTML = state.members.map((x) => `<button type="button" class="chip" data-id="${x.id}">${esc(x.name)}</button>`).join('');
+    }).join('');
+    return html || '<div class="log" style="justify-content:center;color:var(--muted)">まだ履歴がありません</div>';
   }
-  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
   // ---------- 操作 ----------
   async function adjust(memberId, delta, kind = 'adjust', evidenceUrl = null) {
@@ -214,14 +219,18 @@
   }
 
   function openMember(id) {
-    const x = state.members.find((y) => y.id === id);
-    if (!x) return;
+    if (!state.members.some((y) => y.id === id)) return;
     state.memberSheetId = id;
-    $('member-title').textContent = `${x.name}の残り`;
-    $('member-remaining').textContent = x.remaining;
-    $('member-minus').disabled = x.remaining <= 0;
-    $('member-set-me').hidden = id === state.meId;
+    renderMemberSheet();
     openSheet('sheet-member');
+  }
+  function renderMemberSheet() {
+    const x = state.members.find((y) => y.id === state.memberSheetId);
+    if (!x) return closeSheet('sheet-member');
+    $('member-title').textContent = `${x.name}の履歴`;
+    $('member-remaining').textContent = x.remaining;
+    $('member-month').textContent = eatenThisMonth(x.id);
+    $('member-history').innerHTML = renderLogs(state.logs.filter((l) => l.member_id === x.id));
   }
 
   // ---------- イベント ----------
@@ -237,10 +246,10 @@
   $('me-avatar').addEventListener('click', () => { if (state.meId) openMember(state.meId); else openRegister(); });
 
   $('members').addEventListener('click', (e) => { const b = e.target.closest('.member'); if (b) openMember(b.dataset.id); });
-  $('history').addEventListener('click', (e) => {
+  ['history', 'member-history'].forEach((id) => $(id).addEventListener('click', (e) => {
     const img = e.target.closest('[data-full]');
     if (img) { $('viewer-img').src = img.dataset.full; $('viewer').hidden = false; }
-  });
+  }));
   $('viewer').addEventListener('click', () => { $('viewer').hidden = true; $('viewer-img').src = ''; });
 
   document.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => closeSheet(b.closest('.sheet').id)));
@@ -293,17 +302,6 @@
       updateEvidenceCount();
     }
   });
-
-  // メンバー調整
-  $('member-plus').addEventListener('click', async () => {
-    const left = await adjust(state.memberSheetId, 1);
-    if (left !== null) { $('member-remaining').textContent = left; $('member-minus').disabled = left <= 0; }
-  });
-  $('member-minus').addEventListener('click', async () => {
-    const left = await adjust(state.memberSheetId, -1);
-    if (left !== null) { $('member-remaining').textContent = left; $('member-minus').disabled = left <= 0; }
-  });
-  $('member-set-me').addEventListener('click', () => { setMe(state.memberSheetId); closeSheet('sheet-member'); toast('自分を切り替えました'); });
 
   // 設定
   $('setting-me').addEventListener('change', (e) => { setMe(e.target.value); toast('自分を切り替えました'); });
