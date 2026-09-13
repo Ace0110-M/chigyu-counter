@@ -5,6 +5,7 @@ import { createClient } from "jsr:@supabase/supabase-js@2";
 
 const LINE_TOKEN = Deno.env.get("LINE_CHANNEL_ACCESS_TOKEN") ?? "";
 const LINE_SECRET = Deno.env.get("LINE_CHANNEL_SECRET") ?? "";
+const APP_URL = "https://ace0110-m.github.io/chigyu-counter/";
 const sb = createClient(
   Deno.env.get("SUPABASE_URL")!,
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
@@ -123,9 +124,10 @@ async function handleNotify(req: Request) {
   const eaten = (monthLogs ?? []).reduce((s, l) => s - l.delta, 0);
 
   const n = Math.abs(log.delta);
-  const text = member.remaining === 0
+  const headline = member.remaining === 0
     ? `🎉 ${member.name} が ${n}杯 食べて完食！残り 0杯（今月 ${eaten}杯クリア）`
     : `🍚 ${member.name} が ${n}杯 食べた！\n残り ${member.remaining}杯（今月 ${eaten}杯クリア）`;
+  const text = `${headline}\n\n${APP_URL}`;
 
   const messages: unknown[] = [{ type: "text", text }];
   const image = await buildImageMessage(log.evidence_url);
