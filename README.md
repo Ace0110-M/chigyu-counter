@@ -26,3 +26,12 @@ python3 -m http.server 8765
 ```
 
 http://localhost:8765 を開く。
+
+## LINE通知
+
+食べた記録（`kind='eat'`）が入ると、DBトリガー（pg_net）→ Edge Function `line-notify` → LINE Messaging API でグループトークに通知する。
+
+- `supabase/functions/line-notify/index.ts` … Webhook受信（グループID自動保存）と push 送信
+- `chigyu_settings` … `line_group_id` を保持（anon からはアクセス不可）
+- Secrets（Supabaseダッシュボードで設定）: `LINE_CHANNEL_ACCESS_TOKEN`, `LINE_CHANNEL_SECRET`
+- LINE の Webhook URL: `https://<project>.supabase.co/functions/v1/line-notify/webhook`
