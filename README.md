@@ -1,0 +1,28 @@
+# チー牛カウンター 🍚🧀
+
+友達同士で「あと何杯チー牛を食べないといけないか」を数えるアプリ。
+
+- 残り杯数の表示・±1杯の調整
+- 食べた証拠（写真・レシート）を登録して杯数を減らす
+- ニックネームだけで登録、誰でも誰の杯数もいじれる
+- みんなの残りがリアルタイムで同期
+- スマホのホーム画面に追加してアプリのように使える（PWA）
+
+## 構成
+
+- フロントエンド: 静的 HTML / CSS / JS（GitHub Pages）
+- バックエンド: Supabase（Postgres + Storage + Realtime）
+  - `chigyu_members` … メンバーと残り杯数
+  - `chigyu_logs` … 増減の履歴と証拠画像URL
+  - `chigyu_adjust()` … 杯数の更新と履歴記録をまとめて行う関数
+  - `chigyu-evidence` バケット … 証拠画像
+
+`config.js` の publishable key は公開前提のキーです（RLS で保護）。
+
+## ローカルで動かす
+
+```bash
+python3 -m http.server 8765
+```
+
+http://localhost:8765 を開く。

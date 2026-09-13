@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>チー牛カウンター</title>
+  <meta name="theme-color" content="#fdf3ea" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="チー牛" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="assets/icon-192.png" />
+  <link rel="apple-touch-icon" href="assets/icon-192.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app" class="app">
+    <header class="topbar">
+      <div class="brand">
+        <img src="assets/bowl.png" alt="" class="brand-icon" />
+        <h1>チー牛カウンター</h1>
+      </div>
+      <button id="me-avatar" class="avatar" type="button" aria-label="自分を切り替える">?</button>
+    </header>
+
+    <main class="content">
+      <!-- ホーム -->
+      <section id="view-home" class="view is-active">
+        <div class="hero card">
+          <img src="assets/bowl.png" alt="チーズ牛丼" class="hero-img" />
+          <div class="hero-body">
+            <div class="hero-label">あなたの残り</div>
+            <div class="hero-count"><span id="my-remaining">–</span><small>杯</small></div>
+            <div class="hero-sub">今月 <span id="my-month">0</span>杯クリア</div>
+            <div class="bar"><div id="my-bar" class="bar-fill" style="width:0%"></div></div>
+          </div>
+        </div>
+
+        <div class="row-buttons">
+          <button id="btn-minus" class="btn btn-outline" type="button">− 1杯</button>
+          <button id="btn-plus" class="btn btn-primary" type="button">＋ 1杯</button>
+        </div>
+
+        <h2 class="section-title">みんなの残り</h2>
+        <div id="members" class="card list"></div>
+
+        <button id="btn-evidence" class="btn btn-primary btn-wide" type="button">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          食べた証拠を追加
+        </button>
+      </section>
+
+      <!-- 履歴 -->
+      <section id="view-history" class="view">
+        <h2 class="section-title">履歴</h2>
+        <div id="history" class="card list"></div>
+      </section>
+
+      <!-- 設定 -->
+      <section id="view-settings" class="view">
+        <h2 class="section-title">設定</h2>
+        <div class="card settings">
+          <div class="setting">
+            <div class="setting-label">自分のアカウント</div>
+            <div class="setting-row">
+              <select id="setting-me" class="select"></select>
+              <button id="setting-new" class="btn btn-small btn-outline" type="button">新規登録</button>
+            </div>
+          </div>
+          <div class="setting">
+            <div class="setting-label">ニックネームを変更</div>
+            <div class="setting-row">
+              <input id="setting-name" class="input" type="text" maxlength="20" placeholder="新しいニックネーム" />
+              <button id="setting-rename" class="btn btn-small btn-primary" type="button">保存</button>
+            </div>
+          </div>
+          <div class="setting">
+            <div class="setting-label">ホーム画面に追加</div>
+            <p class="setting-help">iPhone: Safariの共有ボタン → 「ホーム画面に追加」<br/>Android: Chromeのメニュー → 「ホーム画面に追加」</p>
+          </div>
+          <div class="setting">
+            <button id="setting-delete" class="btn btn-small btn-danger" type="button">このアカウントを削除</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <nav class="tabbar">
+      <button class="tab is-active" data-view="home" type="button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 2 12h3v8h5v-6h4v6h5v-8h3z"/></svg>
+        <span>ホーム</span>
+      </button>
+      <button class="tab" data-view="history" type="button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        <span>履歴</span>
+      </button>
+      <button class="tab" data-view="settings" type="button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+        <span>設定</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- 登録シート -->
+  <div id="sheet-register" class="sheet" hidden>
+    <div class="sheet-panel">
+      <div class="sheet-handle"></div>
+      <h3>ようこそ！</h3>
+      <p class="muted">ニックネームを登録してはじめよう</p>
+      <form id="form-register" class="form">
+        <input id="register-name" class="input input-lg" type="text" maxlength="20" placeholder="ニックネーム" autocomplete="off" required />
+        <button class="btn btn-primary btn-wide" type="submit">登録する</button>
+      </form>
+      <div id="register-existing" class="existing" hidden>
+        <p class="muted">すでに登録済みの人はこちら</p>
+        <div id="register-existing-list" class="chips"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 証拠シート -->
+  <div id="sheet-evidence" class="sheet" hidden>
+    <div class="sheet-panel">
+      <div class="sheet-handle"></div>
+      <div class="sheet-head">
+        <h3>食べた証拠を追加</h3>
+        <button class="close" type="button" data-close>×</button>
+      </div>
+      <p class="muted">写真・レシート・注文履歴のスクショなど</p>
+      <form id="form-evidence" class="form">
+        <label class="dropzone" id="dropzone">
+          <input id="evidence-file" type="file" accept="image/*" hidden />
+          <div id="dropzone-empty" class="dropzone-empty">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            <span>証拠を選ぶ</span>
+          </div>
+          <img id="evidence-preview" class="dropzone-preview" alt="" hidden />
+        </label>
+        <div class="field">
+          <span class="field-label">食べた人</span>
+          <select id="evidence-member" class="select"></select>
+        </div>
+        <div class="field">
+          <span class="field-label">杯数</span>
+          <div class="stepper">
+            <button type="button" class="step" data-step="-1">−</button>
+            <span id="evidence-count">1杯</span>
+            <button type="button" class="step" data-step="1">＋</button>
+          </div>
+        </div>
+        <button id="evidence-submit" class="btn btn-primary btn-wide" type="submit">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" fill="#fff" stroke="#fff"/><path d="m8 12 3 3 5-6" stroke="#f26a1b"/></svg>
+          <span id="evidence-submit-label">証拠を登録して1杯減らす</span>
+        </button>
+        <p class="muted small center">画像は確認のためだけに使用します</p>
+      </form>
+    </div>
+  </div>
+
+  <!-- メンバー調整シート -->
+  <div id="sheet-member" class="sheet" hidden>
+    <div class="sheet-panel">
+      <div class="sheet-handle"></div>
+      <div class="sheet-head">
+        <h3 id="member-title">調整</h3>
+        <button class="close" type="button" data-close>×</button>
+      </div>
+      <div class="member-big"><span id="member-remaining">0</span><small>杯</small></div>
+      <div class="row-buttons">
+        <button id="member-minus" class="btn btn-outline" type="button">− 1杯</button>
+        <button id="member-plus" class="btn btn-primary" type="button">＋ 1杯</button>
+      </div>
+      <button id="member-set-me" class="btn btn-wide btn-ghost" type="button">この人を「自分」にする</button>
+    </div>
+  </div>
+
+  <!-- 画像ビューア -->
+  <div id="viewer" class="viewer" hidden>
+    <img id="viewer-img" alt="証拠画像" />
+  </div>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
