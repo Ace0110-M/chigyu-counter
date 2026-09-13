@@ -215,7 +215,7 @@
   }
   function updateEvidenceCount() {
     $('evidence-count').textContent = `${state.evidenceCount}杯`;
-    $('evidence-submit-label').textContent = `証拠を登録して${state.evidenceCount}杯減らす`;
+    $('evidence-submit-label').textContent = `記録して${state.evidenceCount}杯減らす`;
   }
 
   function openMember(id) {
@@ -283,7 +283,7 @@
   }));
   $('form-evidence').addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (!state.evidenceFile) return toast('証拠の画像を選んでください');
+    if (!state.evidenceFile) return toast('食べた写真を選んでください');
     const memberId = $('evidence-member').value;
     const btn = $('evidence-submit');
     btn.disabled = true;
